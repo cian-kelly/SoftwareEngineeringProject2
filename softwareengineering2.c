@@ -11,18 +11,26 @@ struct board {
   int player1score;
   int player2score;
   char turn;
+  char turnopposite;
+  int samecounterpositioning[6];
 };
 
-int start(struct board game);
-int gametracker(struct board game);
-int xconverter(char xcoordinate, int xcoordinateconverted);
-int movechecker(struct board game, int xcoordinateconverted, int ycoordinate);
+struct board game;
+
+void start(struct board *);
+int gametracker(struct board *);
+int xconverter(char xcoordinate);
+int movechecker(struct board *, int xcoordinateconverted, int ycoordinate);
+void boardprinter(struct board game);
+int minandmax(int x, int y, int min, int max);
+//int movemaker(int board *, int xcoordinateconverted, int ycoordinate);
 
 int main(void)
 {
-  struct board game;
-  game.player1score=2;
-  game.player2score=2;
+  struct board game[1];
+  //struct board game;
+  game->player1score=2;
+  game->player2score=2;
   //char player1[20];
   //char player2[20];
   //char board[8][8];
@@ -32,11 +40,14 @@ int main(void)
   //int j=0;
   //int count=1;
   //char letter[8]={'a','b','c','d','e','f','g','h'};
-
+  //printf("\nEnter name of Player 1 (Black):\n");
+  //scanf("%s", game.player1);
   start(game);
+  gametracker(game);
+  boardprinter(game);
 }
 
-int start(struct board game)
+void start(struct board *ptr)
 {
   int i=0;
   int j=0;
@@ -77,75 +88,123 @@ int start(struct board game)
   printf("\t\t        a b c d e f g h\n");
 }
 
-int gametracker(struct board game)
+int gametracker(struct board *ptr)
 {
   bool started=false;
+  bool found=false;
   char userinput;
   char xcoordinate;
   int ycoordinate;
-  int xcoordinateconverted=10;
+  int xcoordinateconverted=0;
+  bool valid=false;
+  bool validmove=false;
+  int correct=0;
+  char temp;
   // 0 is black
   game.turn='B';
+  game.turnopposite='W';
+  int temporaryfix=0;
 
-
-  if (game.turn == 'B')
+  while (temporaryfix<=1)
   {
+    temporaryfix=1;
     if (!started)
     {
-      printf("%s (Black) will start\n", game.player1);
+      printf("\n\n%s (Black) will start\n", game.player1);
+      started=true;
     }
      else
      {
-       printf("%s is up next\n", game.playerone);
-     }
-
+       if (game.turn == 'B')
+       {
+         printf("%s is up next\n", game.player1);
+       }
+        else
+        {
+          printf("%s is up next\n", game.player2);
+        }
+      }
+    valid=false;
     while (!valid)
     {
-      printf("Would you like to play or hold  ? [P|H]");
+      getchar();
+      printf("Would you like to play or hold  ? [P|H]\n");
       scanf("%c", &userinput);
 
       if (userinput == 'h' || userinput == 'H')
       {
         printf("%s has chosen to hold !\n");
-        game.turn='W';
+        temp=game.turn;
+        game.turn=game.turnopposite;
+        game.turnopposite=temp;
+        valid=true;
       }
         else if (userinput == 'p' || userinput == 'P')
         {
-          while (!found)
+          valid=true;
+          validmove=false;
+          while (!validmove)
           {
-            printf("Please enter an x coordinate (letter A-H)");
-            scanf("%c", &xcoordinate);
-            if (userinput >= 65 || userinput <= 72 )
+            while (!found)
             {
-              userinput -= 32;
-              found=true;
-            }
-              else if ( (userinput < 65 && userinput > 72) && (userinput > 97 && userinput < 122) )
+              getchar();
+              printf("Please enter an x coordinate (letter A-H)\n");
+              scanf("%c", &xcoordinate);
+              if (xcoordinate >= 65 && xcoordinate <= 72 )
+              {
+                //printf("hitting first\n");
+                xcoordinate += 32;
+                found=true;
+              }
+                else if (xcoordinate > 97 && xcoordinate < 122)
+                {
+                  //printf("hitting second\n");
+                  found=true;
+                }
+                  else
+                  {
+                    printf("Invalid input. Please enter a letter A-H\n\n");
+                  }
+                }
+            found=false;
+            while (!found)
+            {
+              getchar();
+              printf("Please enter a y coordinate (number 1-8)\n");
+              scanf("%d", &ycoordinate);
+              ycoordinate--;
+              printf("y-coord = %d\n", ycoordinate);
+              if ( ycoordinate >= 0 && ycoordinate <= 8 )
               {
                 found=true;
               }
-                else
-                {
-                  printf("Invalid input. Please enter a letter A-H\n\n");
-                }
-          }
-          found=false;
-          while (!found)
-          {
-            printf("Please enter a y coordinate (number 1-8)");
-            scanf("%d", &ycoordinate);
-
-            if ( ycoordinate >= 1 && ycoordinate <= 8 )
-            {
-              found=true;
-            }
               else
               {
                 printf("Invalid input. Please enter a number 1-8\n\n");
               }
+            }
+            xcoordinateconverted=xconverter(xcoordinate);
+            //printf("%d", xcoordinateconverted);
+
+            correct=movechecker(game, xcoordinateconverted, ycoordinate);
+            //printf("\ncorrect = %d", correct);
+            if (correct == 1)
+            {
+              printf("Move is valid.\n");
+              validmove=true;
+              //movemaker(game, xcoordinateconverted, ycoordinate);
+            //call function to make move
+            boardprinter(game);
+              //prepare for next player
+              temp=game.turn;
+              game.turn=game.turnopposite;
+              game.turnopposite=temp;
+            }
+              else
+              {
+                printf("Move is invalid. Please enter another move\n\n");
+              }
           }
-          xconverter(xcoordinate, xcoordinateconverted);
-          movechecker(game, xcoordinateconverted, ycoordinate);
         }
           else
           {
@@ -153,104 +212,274 @@ int gametracker(struct board game)
           }
     }
   }
-    else if (game.turn == 'W')
+
 }
 
-int xconverter(char xcoordinate, int xcoordinateconverted)
+int xconverter(char xcoordinate)
 {
-  char converterstring[8]={a,b,c,d,e,f,g,h};
+  char converterstring[8]={'a','b','c','d','e','f','g','h'};
   int i=0;
+  int xcoord=0;
   bool found=false;
-
   while (!found)
   {
     if (xcoordinate == converterstring[i])
     {
-      xcoordinateconverted=i;
-      xcoordinateconverted++;
-      found=true
+      xcoord=i;
+      found=true;
     }
     i++;
   }
+  return xcoord;
 }
 
-int movechecker(struct board game, char xcoordinateconverted, int ycoordinate)
+int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)
 {
   int i=0;
   int j=0;
   int k=0;
+  int l=0;
   bool found=false;
   int count=0;
-
-  if (boardgame[i][xcoordinateconverted]='-')
+  int validmove=1;
+  int invalidmove=0;
+  bool turncolour=false;
+  bool emptyspace=false;
+  //int xcoord=
+  //printf("xcoord = %d\nycoord = %d", xcoordinateconverted, ycoordinate);
+  for (i=0;i<6;i++)
   {
-    count += 10;
+    game.samecounterpositioning[i]=0;
   }
 
-  for (i=0;i<8;i++)
+  if (game.board[i][xcoordinateconverted]='-')
   {
-    if (game.turn == boardgame[i][xcoordinateconverted])
+    emptyspace=true;
+  }
+
+
+    if (emptyspace)
     {
-      
-      count++;
-      //vertical
+      /* for (i=0;i<8;i++)//vertical
+      {
+        if (game.turn == game.board[i][xcoordinateconverted])
+        {
+          if (i > ycoordinate)
+          {
+            if (game.turnopposite == game.board[ycoordinate+1][xcoordinateconverted])
+            {
+              count++;
+          //printf("here1\n");
+          //game.samecounterpositioning[l]++;
+            if (count>=11)
+            {
+              while (!turncolour)
+              {
+                for (l=ycoordinate;l<i;l++)
+                {
+
+                }
+              }
+            }
+          }
+        }
+          else   //if i<ycoord
+          {
+            if (game.turnopposite == game.board[ycoordinate-1][xcoordinateconverted])
+            {
+              count++;
+            //printf("here2\n");
+            //game.samecounterpositioning[l]++;
+            }
+          }
+        }
+      }
+  //printf("count#2 = %d\n", count);
+  */
+  //vertical down
+  for (i=ycoordinate;i<8;i++)
+  {
+    if (game.turn == game.board[i][xcoordinateconverted])
+    {
+      if (game.turnopposite == game.board[ycoordinate+1][xcoordinateconverted])
+      {
+        count++;
+        for (l=ycoordinate;l<i;l++)
+        {
+          game.board[l][xcoordinateconverted]=game.turn;
+        }
+      }
+    }
+  }
+  //vertical up
+  for (i=ycoordinate;i>0;i--)
+  {
+    if (game.turn == game.board[i][xcoordinateconverted])
+    {
+      if (game.turnopposite == game.board[ycoordinate-1][xcoordinateconverted])
+      {
+        count++;
+        for (l=ycoordinate;l>i;l--)
+        {
+          game.board[l][xcoordinateconverted]=game.turn;
+        }
+      }
     }
   }
 
-  for (j=0;j<8;j++)
+  //horizontal left
+  for (j=xcoordinateconverted;j>0;j--)
   {
-    if (game.turn == boardgame[ycoordinate][j])
+    if (game.turn == game.board[ycoordinate][j])
     {
-      count++;
-      //horizontal
+      if (game.turnopposite == game.board[ycoordinate][xcoordinateconverted-1])
+      {
+        count++;
+        for (k=xcoordinateconverted;k>j;k--)
+        {
+          game.board[ycoordinate][k]=game.turn;
+        }
+      }
     }
   }
-
+  //horizontal right
+  for (j=xcoordinateconverted;j<8;j++)
+  {
+    if (game.turn == game.board[ycoordinate][j])
+    {
+      if (game.turnopposite == game.board[ycoordinate][xcoordinateconverted+1])
+      {
+        count++;
+        for (k=xcoordinateconverted;k<j;k++)
+        {
+          game.board[ycoordinate][k]=game.turn;
+        }
+      }
+    }
+  }
+    printf("count#3 = %d\n", count);
+  l++;
   //bottom-right diagonal
   for (i=ycoordinate+1;i<8;i++)
   {
     for (j=xcoordinateconverted+1;j<8;j++)
     {
-      if (game.turn == boardgame[i][j])
+      if (game.turn == game.board[i][j])
       {
-        count++;
+        if (game.turnopposite == game.board[ycoordinate+1][xcoordinateconverted+1])
+        {
+          count++;
+          for (l=ycoordinate;l<i;l++)
+          {
+            for (k=xcoordinateconverted;k<j;k++)
+            {
+              game.board[l][k]=game.turn;
+            }
+          }
+        }
       }
     }
   }
-
+  printf("count#4 = %d\n", count);
+  printf("C4 : %c\nD4 : %c", game.board[3][2], game.board[3][3]);
+  l++;
+  //printf("\n\n%d\n", count);
   //bottom-left diagonal
   for (i=ycoordinate+1;i<8;i++)
   {
-    for (j=xcoordinateconverted-1;j<8;j--)
+    for (j=xcoordinateconverted-1;j>0;j--)
     {
-      if (game.turn == boardgame[i][j])
+      if (game.turn == game.board[i][j])
       {
-        count++;
+        if (game.turnopposite == game.board[ycoordinate+1][xcoordinateconverted-1])
+        {
+          count++;
+          for (l=ycoordinate;l<i;l++)
+          {
+            for (k=xcoordinateconverted;k>j;k--)
+            {
+              game.board[l][k]=game.turn;
+            }
+          }
+        }
       }
     }
   }
-
+    printf("count#5 = %d\n", count);
+    l++;
   //top-left diagonal
-  for (i=ycoordinate-1;i<8;i--)
+  for (i=ycoordinate-1;i>0;i--)
   {
-    for (j=xcoordinateconverted-1;j<8;j--)
+    for (j=xcoordinateconverted-1;j>0;j--)
     {
-      if (game.turn == boardgame[i][j])
+      if (game.turn == game.board[i][j])
       {
-        count++;
+        if (game.turnopposite == game.board[ycoordinate-1][xcoordinateconverted-1])
+        {
+          count++;
+          for (l=ycoordinate;l>i;l--)
+          {
+            for (k=xcoordinateconverted;k>j;k--)
+            {
+              game.board[l][k]=game.turn;
+            }
+          }
+        }
       }
     }
   }
-
+  printf("count#6 = %d\n", count);
+  l++;
   //top-right diagonal
-  for (i=ycoordinate-1;i<8;i--)
+  for (i=ycoordinate-1;i>0;i--)
   {
     for (j=xcoordinateconverted+1;j<8;j++)
     {
-      if (game.turn == boardgame[i][j])
+      if (game.turn == game.board[i][j])
       {
-        count++;
+        if (game.turnopposite == game.board[ycoordinate-1][xcoordinateconverted+1])
+        {
+          count++;
+          for (l=ycoordinate;l>i;l--)
+          {
+            for (k=xcoordinateconverted;k<j;k++)
+            {
+              game.board[l][k]=game.turn;
+            }
+          }
+        }
       }
     }
   }
+}
+    printf("count#7 = %d\n", count);
+  if (count>=1)
+  {
+    printf("greater2");
+    return 1;
+  }
+    else
+    {
+      printf("greater1");
+      return 0;
+    }
+}
+
+void boardprinter(struct board game)
+{
+  int i=0;
+  int j=0;
+  int counter=1;
+
+  for (i=0;i<8;i++)
+  {
+    printf("\t\t      %d ", counter);
+    for(j=0;j<8;j++)
+    {
+      printf("%c ", game.board[i][j]);
+    }
+    printf("\n");
+    counter++;
+  }
+  printf("\t\t        a b c d e f g h\n");
 }
