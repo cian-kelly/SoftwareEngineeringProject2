@@ -74,21 +74,16 @@ int gametracker(struct board *ptr)                                              
   char temp;                                                                      /* temporarily stores the turn char */
   int passorhold;                                                                 /* stores value returned by the validmovechecker function */
   bool passed=false;                                                              /* loops until player passes */
+  int bothpass=0;                                                                 /* stores the number of passes made. if a black and a white player both pass one after another games stops */
   game->turn='B';                                                                 /* set turn to black as black starts */
   game->turnopposite='W';                                                         /* set turn opposite to white as black starts and white goes second */
-  int passone=0;                                                                  /* used to determine if player1 passed */
-  int passtwo=0;                                                                  /* used to determine if player2 passed */
 
-  while ( ((game->player1score + game->player2score) < 64) && ((passone+passtwo) != 2) )   /* loop while all squares arent filled and both people havent passed in a row*/
+  while ( ((game->player1score + game->player2score) < 64) && (bothpass != 2) )   /* loop while all squares arent filled and both people havent passed in a row*/
   {
-    if (game->turn == 'B')                                                        /* if its blacks turn, reset the passone variable */
+    if (game->turn == 'B')                                                        /* if its blacks turn, reset the bothpass variable */
     {
-      passone=0;                                                                  /* set passone to zero */
+      bothpass=0;                                                                 /* set both pass to zero */
     }
-      else                                                                        /* otherwise */
-      {
-        passtwo=0;                                                                /* set passtwo to zero */
-      }
 
     if (!started)                                                                 /* if game not started */
     {
@@ -112,24 +107,17 @@ int gametracker(struct board *ptr)                                              
       passed=false;                                                               /* set passed to false */
       while (!passed)                                                             /* while not passed */
       {
-        getchar();
         printf("There are no valid moves\nPlease press P to pass\n");             /* inform user no valid moves */
         scanf("%c", &userinput);                                                  /* scan user input */
         if (userinput == 'P' || userinput == 'p')                                 /* if user entered p */
         {
           passed=true;                                                            /* valid input. set passed to true */
-          if (game->turn == 'B')                                                  /* if its blacks turn, add one to the passone variable */
-          {
-            passone=1;                                                            /* set passone to one */
-          }
-            else                                                                  /* otherwise */
-            {
-              passtwo=1;                                                          /* set passtwo to one */
-            }
+          bothpass++;                                                             /* player passed so add one to bothpass */
         }
           else                                                                    /* otherwise (user didnt enter p) */
           {
             printf("Invalid input. Please enter P to pass\n\n");                  /* inform user invalid input */
+            getchar();
           }
       }
       temp=game->turn;                                                            /* transfer character in turn to temp */

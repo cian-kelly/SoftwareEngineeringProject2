@@ -1,8 +1,3 @@
-#include <stdio.h>                                                                /* including libraries */
-#include <stdlib.h>
-#include <stdbool.h>
-#include <time.h>
-
 struct board {                                                                    /* structure for storing board */
   char board[8][8];                                                               /* stores the board placement */
   char player1[20];                                                               /* stores player one's name */
@@ -12,7 +7,6 @@ struct board {                                                                  
   char turn;                                                                      /* stores a character to show whos turn it is (ie B for black and W for white) */
   char turnopposite;                                                              /* stores the opposite character to the one stored in char turn */
 };
-
 struct board game[1];                                                             /* globally declaring one struct of type board called game */
 void start(struct board *);                                                       /* function for the start of the game - prints intro, scans in names etc */
 int gametracker(struct board *);                                                  /* tracks game progress */
@@ -22,13 +16,6 @@ int validmovechecker(struct board *ptr);                                        
 void boardprinter(struct board *);                                                /* prints the board */
 void playerscoreupdater(struct board *);                                          /* updates the player scores */
 void finished(struct board *);                                                    /* prints the final result to CLI and appends results with info onto file */
-
-int main(void)
-{
-  start(game);                                                                    /* calls function start. passes the structure game as an argument */
-  gametracker(game);                                                              /* calls function gametracker. passes the structure game as an argument */
-  finished(game);                                                                 /* calls function to print the final results */
-}
 
 void start(struct board *ptr)                                                     /* the function start is used to initialise the board */
 {
