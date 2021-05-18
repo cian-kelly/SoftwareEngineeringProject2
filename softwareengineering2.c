@@ -1,8 +1,7 @@
 #include <stdio.h>                                                                /* including libraries */
 #include <stdlib.h>
 #include <stdbool.h>
-
-#define MAX_SIZE 20                                                               /* sets the max size to 20 */
+#include <time.h>
 
 struct board {                                                                    /* structure for storing board */
   char board[8][8];                                                               /* stores the board placement */
@@ -12,42 +11,22 @@ struct board {                                                                  
   int player2score;                                                               /* stores player two's score */
   char turn;                                                                      /* stores a character to show whos turn it is (ie B for black and W for white) */
   char turnopposite;                                                              /* stores the opposite character to the one stored in char turn */
-  int samecounterpositioning[6];                                                  /* */
 };
 
-//struct board game;                                                                /* declaring the struct board */
-struct board game[1];
-void start(struct board *);                                                       /* function for the start of the game - prints intro etc*/
-int gametracker(struct board *);                                                  /* traks game progress */
+struct board game[1];                                                             /* globally declaring one struct of type board called game */
+void start(struct board *);                                                       /* function for the start of the game - prints intro, scans in names etc */
+int gametracker(struct board *);                                                  /* tracks game progress */
 int xconverter(char xcoordinate);                                                 /* converts xcoordinate from a letter to a number */
 int movechecker(struct board *, int xcoordinateconverted, int ycoordinate);       /* checks if a move is valid */
-void boardprinter(struct board *);                                             /* prints the board */
-void playerscoreupdater(struct board *);
-void finished(struct board *);
-//int minandmax(int x, int y, int min, int max);
-//int movemaker(int board *, int xcoordinateconverted, int ycoordinate);
+void boardprinter(struct board *);                                                /* prints the board */
+void playerscoreupdater(struct board *);                                          /* updates the player scores */
+void finished(struct board *);                                                    /* prints the final result to CLI and appends results with info onto file */
 
 int main(void)
 {
-  struct board game[1];                                                           /* */
-  //struct board game;
-  game->player1score=2;                                                           /* When the game starts, black already has two pieces on the board. Therefore their score is set to two */
-  game->player2score=2;                                                           /* When the game starts, white already has two pieces on the board. Therefore their score is set to two*/
-  //char player1[20];
-  //char player2[20];
-  //char board[8][8];
-  //int player1score=2;
-  //int player2score=2;
-  //int i=0;
-  //int j=0;
-  //int count=1;
-  //char letter[8]={'a','b','c','d','e','f','g','h'};
-  //printf("\nEnter name of Player 1 (Black):\n");
-  //scanf("%s", game.player1);
   start(game);                                                                    /* calls function start. passes the structure game as an argument */
   gametracker(game);                                                              /* calls function gametracker. passes the structure game as an argument */
-  //boardprinter(game);                                                             /* calls function boardprinter. passes the structure game as an argument */
-  finished(game);
+  finished(game);                                                                 /* */
 }
 
 void start(struct board *ptr)                                                     /* the function start is used to initialise the board */
@@ -56,39 +35,29 @@ void start(struct board *ptr)                                                   
   int j=0;                                                                        /* counter for array positioning (column) */
   int counter=1;                                                                  /* counter for printing board */
 
+  game->player1score=2;                                                           /* When the game starts, black already has two pieces on the board. Therefore their score is set to two */
+  game->player2score=2;                                                           /* When the game starts, white already has two pieces on the board. Therefore their score is set to two */
+
   for (i=0;i<8;i++)                                                               /* set i to zero, loop while i is less than 8 and increment i each loop */
   {
-    for(j=0;j<8;j++)                                                              /* set j to zero, loop while j is less than 8 and incrememtn j each loop */
+    for(j=0;j<8;j++)                                                              /* set j to zero, loop while j is less than 8 and incrememt j each loop */
     {
-      game->board[i][j]='-';                                                       /* set */
+      game->board[i][j]='-';                                                      /* set every piece on the board equal to hyphen */
     }
   }
 
-  game->board[3][3]='W';                                                           /* setting up board for the start of game - initialise position [3][3] in array to char value W */
-  game->board[3][4]='B';                                                           /* setting up board for the start of game - initialise position [3][4] in array to char value B */
-  game->board[4][3]='B';                                                           /* setting up board for the start of game - initialise position [4][3] in array to char value B*/
-  game->board[4][4]='W';                                                           /* setting up board for the start of game - initialise position [4][4] in array to char value W */
+  game->board[3][3]='W';                                                          /* setting up board for the start of game - initialise position [3][3] in array to char value W */
+  game->board[3][4]='B';                                                          /* setting up board for the start of game - initialise position [3][4] in array to char value B */
+  game->board[4][3]='B';                                                          /* setting up board for the start of game - initialise position [4][3] in array to char value B*/
+  game->board[4][4]='W';                                                          /* setting up board for the start of game - initialise position [4][4] in array to char value W */
   printf("-------------------------\n   Welcome to Othello !\n-------------------------\n"); /* print welcome message*/
   printf("\nEnter name of Player 1 (Black):\n");                                  /* prompt user to enter the name of player 1 (black) */
-  scanf("%s", game->player1);                                                      /* scan in the string and store in the player one part of struct */
+  scanf("%s", game->player1);                                                     /* scan in the string and store in the player one part of struct */
   printf("\nEnter name of Player 2 (White):\n");                                  /* prompt user to enter the name of player 2 (white)*/
-  scanf("%s", game->player2);                                                      /* scan in the string and store in the player two part of struct */
-  printf("\n\nPlayer 1 : %s\nPlayer 2 : %s", game->player1, game->player2);         /* Print the assigned names of the players */
-  //printf("\n\nScore: %s (Black) %d:%d %s (White)\n", player1, player1score, player2, player2score);
-  printf("\n\n\t   Score: %s (Black) %d : %d %s (White)\n\n", game->player1, game->player1score, game->player2score, game->player2);  /* */
-
-
-  for (i=0;i<8;i++)                                                               /* */
-  {
-    printf("\t\t      %d ", counter);                                             /* */
-    for(j=0;j<8;j++)                                                              /* */
-    {
-      printf("%c ", game->board[i][j]);                                            /* */
-    }
-    printf("\n");                                                                 /* */
-    counter++;                                                                    /* */
-  }
-  printf("\t\t        a b c d e f g h\n");                                        /* */
+  scanf("%s", game->player2);                                                     /* scan in the string and store in the player two part of struct */
+  printf("\n\nPlayer 1 : %s\nPlayer 2 : %s", game->player1, game->player2);       /* Print the assigned names of the players */
+  printf("\n\n\t   Score: %s (Black) %d : %d %s (White)\n\n", game->player1, game->player1score, game->player2score, game->player2);  /* Print the initial score */
+  boardprinter(game);                                                             /* calls function board printer to print the board */
 }
 
 int gametracker(struct board *ptr)                                                /* */
@@ -104,13 +73,20 @@ int gametracker(struct board *ptr)                                              
   int correct=0;                                                                  /* */
   char temp;                                                                      /* */
   bool needed=false;
+  int passorhold=1;                                       /* REMOVE ASSIGNMENT FOR REAL THING */
+  bool passed=false;
+  int bothpass=0;
   // 0 is black
   game->turn='B';                                                                  /* */
   game->turnopposite='W';                                                          /* */
   //int temporaryfix=0;                                                             /* */
 
-  while ( (game->player1score + game->player2score) < 8)                                                         /* */
+  while ( ((game->player1score + game->player2score) < 64) && (bothpass != 2) )                                                         /* */
   {
+    if (game->turn == 'B')
+    {
+      bothpass=0;
+    }
     //temporaryfix=1;                                                               /* */
     if (!started)                                                                 /* */
     {
@@ -131,20 +107,35 @@ int gametracker(struct board *ptr)                                              
     valid=false;                                                                  /* */
     while (!valid)                                                                /* */
     {
-      getchar();                                                                  /* */
+      //getchar();                                                                  /* */
+      //getchar();
       //call my function which checks if there are any available moves
-      printf("Would you like to play or hold  ? [P|H]\n");                        /* */
-      scanf("%c", &userinput);                                                    /* */
-
-      if (userinput == 'h' || userinput == 'H')                                   /* */
+      //passorhold=validmove(game);
+      if (passorhold == 0)                                   /* */
       {
-        printf("%s has chosen to hold !\n");                                      /* */
+        passed=false;
+        while (!passed)
+        {
+          printf("There are no valid moves\n. Please press P to pass\n");
+          scanf("%d", &userinput);
+
+          if (userinput == 'P' || userinput == 'p')
+          {
+            passed=true;
+            bothpass++;
+          }
+            else
+            {
+              printf("Invalid input. Please enter P to pass\n\n");
+            }
+        }
+        printf("%s has passed !\n");                                              /* */
         temp=game->turn;                                                           /* */
         game->turn=game->turnopposite;                                              /* */
         game->turnopposite=temp;                                                   /* */
         valid=true;                                                               /* */
       }
-        else if (userinput == 'p' || userinput == 'P')                            /* */
+        else if (passorhold == 1)                            /* */
         {
           valid=true;                                                             /* */
           validmove=false;                                                        /* */
@@ -216,10 +207,6 @@ int gametracker(struct board *ptr)                                              
               }
           }
         }
-          else                                                                    /* */
-          {
-            printf("Invalid input. Please enter the letter P to Pass or H to Hold\n\n"); /* */
-          }
     }
   }
 
@@ -257,10 +244,10 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
   bool emptyspace=false;
   //int xcoord=
   //printf("xcoord = %d\nycoord = %d", xcoordinateconverted, ycoordinate);
-  for (i=0;i<6;i++)
+  /* for (i=0;i<6;i++)
   {
     game->samecounterpositioning[i]=0;
-  }
+  } */
 
   if (game->board[i][xcoordinateconverted]='-')
   {
@@ -270,42 +257,7 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
 
     if (emptyspace)
     {
-      /* for (i=0;i<8;i++)//vertical
-      {
-        if (game.turn == game.board[i][xcoordinateconverted])
-        {
-          if (i > ycoordinate)
-          {
-            if (game.turnopposite == game.board[ycoordinate+1][xcoordinateconverted])
-            {
-              count++;
-          //printf("here1\n");
-          //game.samecounterpositioning[l]++;
-            if (count>=11)
-            {
-              while (!turncolour)
-              {
-                for (l=ycoordinate;l<i;l++)
-                {
 
-                }
-              }
-            }
-          }
-        }
-          else   //if i<ycoord
-          {
-            if (game.turnopposite == game.board[ycoordinate-1][xcoordinateconverted])
-            {
-              count++;
-            //printf("here2\n");
-            //game.samecounterpositioning[l]++;
-            }
-          }
-        }
-      }
-  //printf("count#2 = %d\n", count);
-  */
   //vertical down
   for (i=ycoordinate;i<8;i++)
   {
@@ -313,6 +265,7 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
     {
       if (game->turnopposite == game->board[ycoordinate+1][xcoordinateconverted])
       {
+        //printf("Problem#1");
         count++;
         for (l=ycoordinate;l<i;l++)
         {
@@ -328,6 +281,7 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
     {
       if (game->turnopposite == game->board[ycoordinate-1][xcoordinateconverted])
       {
+        //printf("Problem#2");
         count++;
         for (l=ycoordinate;l>i;l--)
         {
@@ -344,6 +298,7 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
     {
       if (game->turnopposite == game->board[ycoordinate][xcoordinateconverted-1])
       {
+        //printf("Problem#3");
         count++;
         for (k=xcoordinateconverted;k>j;k--)
         {
@@ -359,6 +314,7 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
     {
       if (game->turnopposite == game->board[ycoordinate][xcoordinateconverted+1])
       {
+        //printf("Problem#4");
         count++;
         for (k=xcoordinateconverted;k<j;k++)
         {
@@ -368,23 +324,32 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
     }
   }
   //  printf("count#3 = %d\n", count);
-  l++;
+  //l++;
   //bottom-right diagonal
-  for (i=ycoordinate+1;i<8;i++)
+  for (i=ycoordinate;i<8;i++)
   {
-    for (j=xcoordinateconverted+1;j<8;j++)
+    for (j=xcoordinateconverted;j<8;j++)
     {
       if (game->turn == game->board[i][j])
       {
         if (game->turnopposite == game->board[ycoordinate+1][xcoordinateconverted+1])
         {
+          //printf("Problem#5");
           count++;
-          for (l=ycoordinate;l<i;l++)
+          /* for (l=ycoordinate;l<i;l++)
           {
             for (k=xcoordinateconverted;k<j;k++)
             {
               game->board[l][k]=game->turn;
             }
+          } */
+          l=ycoordinate;
+          k=xcoordinateconverted;
+          while ( (l<i) && (k<j) )
+          {
+            game->board[l][k]=game->turn;
+            l++;
+            k++;
           }
         }
       }
@@ -392,75 +357,119 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
   }
   //printf("count#4 = %d\n", count);
   //printf("C4 : %c\nD4 : %c", game->board[3][2], game->board[3][3]);
-  l++;
+  //l++;
   //printf("\n\n%d\n", count);
   //bottom-left diagonal
-  for (i=ycoordinate+1;i<8;i++)
+  for (i=ycoordinate;i<8;i++)
   {
-    for (j=xcoordinateconverted-1;j>0;j--)
+    for (j=xcoordinateconverted;j>0;j--)
     {
       if (game->turn == game->board[i][j])
       {
         if (game->turnopposite == game->board[ycoordinate+1][xcoordinateconverted-1])
         {
+          //printf("Problem#6");
           count++;
-          for (l=ycoordinate;l<i;l++)
+          /* for (l=ycoordinate;l<i;l++)
           {
             for (k=xcoordinateconverted;k>j;k--)
             {
               game->board[l][k]=game->turn;
             }
+          } */
+          l=ycoordinate;
+          k=xcoordinateconverted;
+          while ( (l<i) && (k>j) )
+          {
+            game->board[l][k]=game->turn;
+            l++;
+            k--;
           }
         }
       }
     }
   }
     //printf("count#5 = %d\n", count);
-    l++;
+    //l++;
   //top-left diagonal
-  for (i=ycoordinate-1;i>0;i--)
+  for (i=ycoordinate;i>0;i--)
   {
-    for (j=xcoordinateconverted-1;j>0;j--)
+    for (j=xcoordinateconverted;j>0;j--)
     {
       if (game->turn == game->board[i][j])
       {
         if (game->turnopposite == game->board[ycoordinate-1][xcoordinateconverted-1])
         {
+          //printf("Problem#7");
           count++;
-          for (l=ycoordinate;l>i;l--)
+          /* for (l=ycoordinate;l>i;l--)
           {
             for (k=xcoordinateconverted;k>j;k--)
             {
               game->board[l][k]=game->turn;
             }
+          } */
+          l=ycoordinate;
+          k=xcoordinateconverted;
+          while ( (l>i) && (k>j) )
+          {
+            game->board[l][k]=game->turn;
+            l--;
+            k--;
           }
         }
       }
     }
   }
   //printf("count#6 = %d\n", count);
-  l++;
+  //l++;
+
+  //printf("Before - \nB5: %c\nC6: %c\n", game->board[4][1], game->board[5][2]);
+
   //top-right diagonal
-  for (i=ycoordinate-1;i>0;i--)
-  {
-    for (j=xcoordinateconverted+1;j<8;j++)
+  //for (i=ycoordinate;i>0;i--)
+  //{
+    //for (j=xcoordinateconverted;j<8;j++)
+    //{
+    i=ycoordinate;
+    j=xcoordinateconverted;
+    while ( (i>0) && (j<8) )
     {
       if (game->turn == game->board[i][j])
       {
         if (game->turnopposite == game->board[ycoordinate-1][xcoordinateconverted+1])
         {
+          //printf("Problem#8");
           count++;
+          /*
           for (l=ycoordinate;l>i;l--)
           {
+            //printf("[l][k] = [%d][%d]\n", (l+1), (k+1));
             for (k=xcoordinateconverted;k<j;k++)
             {
+              printf("[l][k] = [%d][%d]\n", (l+1), (k+1));
               game->board[l][k]=game->turn;
             }
+          }*/
+          l=ycoordinate;
+          k=xcoordinateconverted;
+          //printf("i = %d\nj = %d\n", i, j);
+          while ( (l>i) && (k<j) )
+          {
+            game->board[l][k]=game->turn;
+            //printf("game->board[%d][%d] = %c\n", l, k, game->board[l][k]);
+            k++;
+            l--;
           }
         }
       }
+      i--;
+      j++;
     }
-  }
+    //}
+  //}
+  //printf("After - \nB5: %c\nC6: %c\n", game->board[4][1], game->board[5][2]);
+
 }
     //printf("count#7 = %d\n", count);
   if (count>=1)
@@ -475,7 +484,7 @@ int movechecker(struct board *ptr, int xcoordinateconverted, int ycoordinate)   
     }
 }
 
-void boardprinter(struct board *ptr)
+void boardprinter(struct board *ptr)                                              /* */
 {
   int i=0;
   int j=0;
@@ -494,7 +503,7 @@ void boardprinter(struct board *ptr)
   printf("\t\t        a b c d e f g h\n");
 }
 
-void playerscoreupdater(struct board *ptr)
+void playerscoreupdater(struct board *ptr)                                        /* */
 {
   int i=0;
   int j=0;
@@ -519,18 +528,23 @@ void playerscoreupdater(struct board *ptr)
   printf("\n\n\t   Score: %s (Black) %d : %d %s (White)\n\n", game->player1, game->player1score, game->player2score, game->player2);
 }
 
-void finished(struct board *ptr)
+void finished(struct board *ptr)                                                  /* */
 {
   FILE *output;
-  output=fopen("othello-results.txt","w");
+  time_t currenttime;
 
-  if (output=NULL)
+  output=fopen("othello-results.txt","w");
+  time(&currenttime);
+
+  if (output==NULL)
   {
     printf("File othello-results.txt could not be opened\n");
   }
     else
     {
-      printf("\n Final Score: %s (Black) %d : %d %s (White)\n\n", game->player1, game->player1score, game->player2score, game->player2);
+      fprintf(output,"Time of game completion:\n%s\n", ctime(&currenttime));
+      printf("\n Final Score: \n%s (Black) %d : %d %s (White)\n\n", game->player1, game->player1score, game->player2score, game->player2);
+
       //time_t t = time(NULL);
       //struct tm tm = *localtime(&t);
       //fprintf(output,"now: %d-%02d-%02d %02d:%02d:%02d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
